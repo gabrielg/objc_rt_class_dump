@@ -14,6 +14,8 @@ int _objc_rtClassDump(void) {
   int numProperties;
   int outFile;
   intptr_t methodImplementation;
+  const char *methodTypeEncoding;
+  const char *propertyAttributes;
 
   Class *classes = NULL;
   Method *methods = NULL;
@@ -36,7 +38,8 @@ int _objc_rtClassDump(void) {
       if (numProperties > 0) { dprintf(outFile, "  Properties\n"); }
 
       for (int i = 0; i < numProperties; i++) {
-        dprintf(outFile, "    %s\n", property_getName(properties[i]));
+        propertyAttributes = property_getAttributes(properties[i]);
+        dprintf(outFile, "    %s\t%s\n", property_getName(properties[i]), propertyAttributes);
       }
 
       free(properties);
@@ -47,7 +50,9 @@ int _objc_rtClassDump(void) {
 
       for (int i = 0; i < numMethods; i++) {
         methodImplementation = (intptr_t) method_getImplementation(methods[i]);
-        dprintf(outFile, "    %s\t%#lx\n", sel_getName(method_getName(methods[i])), methodImplementation);
+        methodTypeEncoding = method_getTypeEncoding(methods[i]);
+
+        dprintf(outFile, "    %s\t%s\t%#lx\n", sel_getName(method_getName(methods[i])), methodTypeEncoding, methodImplementation);
       }
 
       free(methods);
@@ -58,7 +63,9 @@ int _objc_rtClassDump(void) {
 
       for (int i = 0; i < numMethods; i++) {
         methodImplementation = (intptr_t) method_getImplementation(methods[i]);
-        dprintf(outFile, "    %s\t%#lx\n", sel_getName(method_getName(methods[i])), methodImplementation);
+        methodTypeEncoding = method_getTypeEncoding(methods[i]);
+
+        dprintf(outFile, "    %s\t%s\t%#lx\n", sel_getName(method_getName(methods[i])), methodTypeEncoding, methodImplementation);
       }
 
       free(methods);
